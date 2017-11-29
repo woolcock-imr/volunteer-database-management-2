@@ -71,13 +71,13 @@
                     })
                     break;
                 case '_Summary':
-					records[I].vm_custom[field]=true;
-					if(records[I].UID==null || records[I].UID==undefined) return;
-					td.html("<u style='cursor:pointer;'>Summary...</u>");
-					td.find('u').on('click',function(){
-						$vm.nav_load_module(prefix+'summary','',{record:records[I]});
-					})
-					break;
+						records[I].vm_custom[field]=true;
+						if(records[I].UID==null || records[I].UID==undefined) return;
+						td.html("<u style='cursor:pointer;'>Summary...</u>");
+						td.find('u').on('click',function(){
+							$vm.nav_load_module(prefix+'summary','',{record:records[I]});
+						})
+						break;
                 case '_Full_record':
                     records[I].vm_custom[field]=true;
                     if(records[I].UID==null || records[I].UID==undefined) return;
@@ -183,13 +183,40 @@
             _set_req(); _request_data();
         })
         //-------------------------------------
-		var _set_req=_set_req_export=function(){
-             var sql="with tb0 as (select busy=case when count(ID) > 0 then 'Reserved' end,EM=right(RTRIM(S2), len(S2)-16) from [TABLE-"+_db_pid+"] where (S3='Screening' or S3='Enrolled') and S1<>@s2 group by S2)"
-             sql+=",tb as (select Information,LE=@('Login_Email'),ID,UID,PUID,DateTime,Author,busy,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] left join tb0 on EM=@('Login_Email') where S1=@s2 and ( S3='Registration' ))";
-             sql+=",tb1 as (select V_UID=UID,Information2=Information,S2 from [TABLE-20008533])";
-             sql+="select V_UID,Information2,Information,ID,UID,PUID,DateTime,Author,Reserved=isnull(busy,''),RowNum from tb left join tb1 on S2=LE where RowNum between @I6 and @I7";
-             var sql_n="select count(ID) from [TABLE-"+_db_pid+"-@S1] where  S1=@s2 and ( S3='Registration' )";
-             _req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:input.record.Project_Name}
+		_set_req=function(){
+			/*
+			20011344: permission
+			20009716: project
+			20009681: participant
+			20008533: volunteer registration
+			*/
+			/*
+			//sever side query
+			var sql="\
+				with project_permission as (select login_name=S2,project_name=S3 from [TABLE-20011344] where S2=@S6)\
+				,participantA as (select Information,ID,UID,PUID,DateTime,Author,S1,Email=S2,S3 from [TABLE-20009681-@S1] join project_permission on S1=@S2 and  (S3='Screening Failure') and S1=project_permission.project_name)\
+				,participantB as (select Num=count(ID),Email=S2 from [TABLE-20009681] where (S3='Screening' or S3='Enrolled') and S1<>@S2 group by S2)\
+				,registration as (select V_UID=UID,Information2=Information,Email='system_20008533_'+S1 from [TABLE-20008533])\
+				,records as (select V_UID,Information2,Information,ID,UID,PUID,DateTime,Author,Reserved=case when Num>0 then 'Reserved' else '' end,RowNum=row_number() over (order by ID DESC) \
+				 from registration join participantA on participantA.Email=registration.Email left join participantB on participantB.Email=registration.Email)\
+				select * from records where RowNum between @I6 and @I7\
+			";
+
+			var sql_n="\
+				with project_permission as (select login_name=S2,project_name=S3 from [TABLE-20011344] where S2=@S6 )\
+				select count(ID) from [TABLE-20009681-@S1] join project_permission on S1=@S2 and  (S3='Screening Failure') and S1=project_permission.project_name\
+			";
+			_req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:input.record.Project_Name}
+			*/
+			_req={cmd:'query_special_records',sql:'project_volunteer_failure',sql_n:'project_volunteer_failure_n',s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:input.record.Project_Name};
+		}
+		//-------------------------------------
+		__set_req=_set_req_export=function(){
+            var sql="with tb as (select Information,LE=@('Login_Email'),ID,UID,PUID,DateTime,Author,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] where S1=@s2 and ( S3='Screening Failure') )";
+            sql+=",tb1 as (select V_UID=UID,Information2=Information,S1 from [TABLE-20008533])";
+            sql+="select V_UID,Information2,Information,ID,UID,PUID,DateTime,Author,RowNum from tb left join tb1 on S1=LE  where RowNum between @I6 and @I7";
+            var sql_n="select count(ID) from [TABLE-"+_db_pid+"-@S1] where S1=@s2 and ( S3='Screening Failure')";
+            _req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:input.record.Project_Name}
         }
         //-------------------------------------
         _before_submit=function(record,dbv){

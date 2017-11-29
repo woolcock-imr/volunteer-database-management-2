@@ -165,23 +165,9 @@ function F__ID(){
                 for(var i=0;i<res.records.length;i++){
                     if(res.records[i].Date!==undefined) date=res.records[i].Date;else date='';
                     if(res.records[i].Call_log!==undefined) cl=res.records[i].Call_log;else cl='';
-                    if(res.records[i].Volunteer_Called=='1') vc='checked'; else vc='';
-                    if(res.records[i].Woolcock_Called=='1')  wc='checked'; else wc='';
-                    if(res.records[i].Research_Related=='1') rr='checked'; else rr='';
-                    if(res.records[i].Volunteer_Database_Related=='1') vdr='checked'; else vdr='';
-                    if(res.records[i].Complaint=='1') c='checked'; else c='';
-                    if(res.records[i].Praise=='1') p='checked'; else p='';
                     txt+='    <tr >';
                     txt+='      <td><b>Notes: '+date+'</b></td>';
                     txt+='      <td colspan=5>'+cl+'</td>';
-                    txt+='    </tr>';
-                    txt+='    <tr >';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+vc+'>Volunteer Called</td>';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+wc+'>Woolcock Called</td>';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+rr+'>Research Related</td>';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+vdr+'>Volunteer Database Related</td>';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+c+'>Complaint</td>';
-                    txt+='      <td><input class="w3-check" type="checkbox" '+p+'>Praise</td>';
                     txt+='    </tr>';
                }
             }});
@@ -193,4 +179,10 @@ function F__ID(){
     }
 </script>
 <style>
+	#D__ID{
+	  height:100%;
+	  overflow:auto;
+	  animation: vm_module_fadein 1.0s;
+	  background-color:#fff;
+	}
 </style>
