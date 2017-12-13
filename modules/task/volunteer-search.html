@@ -9,6 +9,33 @@
         //-------------------------------------
 		$('#new__ID').hide();
 		$('#save__ID').hide();
+        /*
+        Specs
+        Only accessable for ADMIN
+        Each project has a specific fixed search for volunteers.
+        The search is based on information in 20009716 (project) - Search is done in 20008533 (volunteer).
+        Select volunteers are added to 20009681 research-participation under relevant project
+        1. Current Date must be within Start_Recruiting and End_Recruiting (20009716) (These fields are new and doesn't exist in the true database yet)
+        2. Medical_Research (20008533) MUST BE CHECKED - exclude otherwise
+        3. Postcode (20008533) - Min and max numeric value. Postcode_Min,Postcode_Max (20009716).
+        4. Gender (20008533) - option Male, Female or Any (ignore gender) Gender (20009716)
+        5. Year_of_Birth (20008533) Calculate Age based on current date - Min and Max numeric value. Age_Min,Age_Max (20009716)
+        6. Diagnosis check boxes Asthma,COPD,Chronic_Bronchitis,Emphysema,Rhintis,Lung_Cancer,Insomnia,Narcolepsy,OSA,RLS (20008533)
+        There are two sections for these checkboxes. If any of the criteria is not met the volunteer is excluded
+
+        a. if any of these checkboxes are checked - the same correspondent checkboxes MUST be checked for the volunteer.
+        Inc_Asthma,Inc_COPD,Inc_Emphysema,Inc_Lung_Cancer,Inc_Rhintis,Inc_Insomnia,Inc_Narcolepsy,Inc_OSA,Inc_RLS (20009716)
+        eg.  Asthma,COPD,Rhintis are checked - Inc_Asthma is checked -> this volunteer is selected base on INCLUTION
+
+        b. if any of these checkboxes are checked - the same correspondent checkboxes MUST NOT be checked for the volunteer.
+        Exc_Asthma,Exc_COPD,Exc_Emphysema,Exc_Lung_Cancer,Exc_Rhintis,Exc_Insomnia,Exc_Narcolepsy,Exc_OSA,Exc_RLS (20009716)
+        eg.  Asthma,COPD,Rhintis are checked - Exc_COPD is checked -> this volunteer is NOT selected base on EXCLUTION
+
+        All Included Volunteers should be automatically be added to the project (research-participation 20009681) with a status "Search" - Status (20009681)
+        If a volunteer already exisits in 20009681 the volunteer should not be added again. No records are ever deleted in 20009681. Only status change.
+
+        If we alway query all projects at the same time - perhasp we can update a date DT3 for the volunteer (20008533) when we last did a search update.
+        */
 		//-------------------------------------
         _fields="Project_Name,_Search_for_new_Volunteers";
         _fields+=",Chief_Investigator,Contact_Name, Contact_Phone,Contact_Email";
