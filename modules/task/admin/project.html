@@ -64,6 +64,7 @@
                 case 'Exc_OSA':
                 case 'Exc_RLS':
                 case 'Approved':
+					if(records[I][field]=='') records[I][field]='0';
                     td.html('<input type=checkbox />');
                     td.css('text-align','center')
                     VmInclude:__COMPONENT__/grid/field_checkbox.js
@@ -74,6 +75,14 @@
         $('#D__ID').on('load',function(){  _set_req(); _request_data();  })
         //-------------------------------------
 		_before_submit=function(record,dbv){
+			var g1=0; if(record.Gender=='Male') g1=1;
+			var g2=0; if(record.Gender=='Female') g2=1;
+			var s=parseInt(record.Inc_Asthma)+2*parseInt(record.Inc_COPD)/*+4*parseInt(record.Chronic_Bronchitis)*/+8*parseInt(record.Inc_Emphysema)+16*parseInt(record.Inc_Rhintis);
+			s+=/*32*parseInt(record.Lung_Cancer)+*/64*parseInt(record.Inc_Insomnia)+128*parseInt(record.Inc_Narcolepsy)+256*parseInt(record.Inc_OSA)+512*parseInt(record.Inc_RLS)+1024*parseInt(g1)+2048*parseInt(g2);
+			dbv.V1=s;
+			var s=parseInt(record.Exc_Asthma)+2*parseInt(record.Exc_COPD)/*+4*parseInt(record.Chronic_Bronchitis)*/+8*parseInt(record.Exc_Emphysema)+16*parseInt(record.Exc_Rhintis);
+			s+=/*32*parseInt(record.Lung_Cancer)+*/64*parseInt(record.Exc_Insomnia)+128*parseInt(record.Exc_Narcolepsy)+256*parseInt(record.Exc_OSA)+512*parseInt(record.Exc_RLS);
+			dbv.V2=s;
 			dbv.S3=record.Project_Name;
             return true;
         };

@@ -10,8 +10,8 @@
 		"call-log-child":				{"table_id":"20009655","url":"/modules/task/call-log-child.html","name_for_search":""},
 		"summary":						{"table_id":"20009681","url":"/modules/task/summary.html","name_for_search":""},
 
-		"volunteer-search":	      		{"table_id":"20009716","url":"/modules/task/volunteer-search.html","name_for_search":"Volunteer search"},
-		"project-volunteers-search":	{"table_id":"20008533","url":"/modules/task/project-volunteers-search.html","name_for_search":""},
+		"volunteer-search":	      		{"table_id":"20009716","url":"/modules/task/admin/volunteer-search.html","name_for_search":"Volunteer search"},
+		"project-volunteers-search":	{"table_id":"20008533","url":"/modules/task/admin/project-volunteers-search.html","name_for_search":""},
 
 		"research-projects":	  		{"table_id":"20009716","url":"/modules/task/research-projects/research-projects.html","name_for_search":"Research projects"},
 		"project-volunteers-all": 		{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers-all.html","name_for_search":""},
