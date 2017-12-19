@@ -20,6 +20,11 @@
 		"project-volunteers-failure": 	{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers-failure.html","name_for_search":""},
 
 		"research-participation": {"table_id":"20009681","url":"/modules/task/research-participation.html","name_for_search":""},
-		"project-permission": {"table_id":"20011344","url":"/modules/task/admin/project-permission.html","name_for_search":"Project permission"}
+		"project-permission": {"table_id":"20011344","url":"/modules/task/admin/project-permission.html","name_for_search":"Project permission"},
+
+		"projects-2":	  				{"table_id":"20009716","url":"/modules/task/test/project.html","name_for_search":"Projects"},
+		"volunteer-status":	  			{"table_id":"20011360","url":"/modules/task/test/volunteer-status.html","name_for_search":"Volunteer Status"},
+		"volunteer-call-log":			{"table_id":"20009655","url":"/modules/task/test/volunteer-call-log.html","name_for_search":""},
+		"volunteer-summary":			{"table_id":"20009655","url":"/modules/task/test/volunteer-summary.html","name_for_search":""}
 	}
 }
