@@ -7,7 +7,7 @@
         VmInclude:__COMPONENT__/grid/grid.v3.js
 		_json='';
 		//-------------------------------------
-		_fields="_Form,R_V1,P_V1,RP1,P_V2,RP2";
+		_fields="_Form,gp,volunteer_UID,ID,R_V1,P_V1,RP1,P_V2,RP2";
 		_fields+=",Status,_Call_Log,_Summary,Start_date,End_date";
 		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
@@ -125,8 +125,24 @@
 		sql_0+=",status as (select ID, Status=S1,volunteer_UID=PUID,Project_Name=S3 from [TABLE-20011360] join volunteer on PUID=volunteer.volunteer_UID )"; //,Project_Name=S3,Project_UID=GUID,volunteer_UID
 
 		//all_result is all volunteer with child status record or empty record (left join)
-		sql_0+=",all_result            as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer.volunteer_UID,ID=status.ID,Information,Status,status.Project_Name,Project_UID from volunteer left join status on volunteer.volunteer_UID=status.volunteer_UID)";
-		sql_0+=",result_of_one_project as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID,          ID,          Information,Status,       Project_Name,Project_UID,RowNum=row_number() over (order by volunteer_ID DESC) from all_result where (Project_Name is NULL or Project_Name=@S2)  )";
+		sql_0+=",all_volunteer_and_status     as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer.volunteer_UID,ID=status.ID,Information,Status,status.Project_Name,Project_UID from volunteer left join status on volunteer.volunteer_UID=status.volunteer_UID)";
+		sql_0+=",result_of_one_project_0      as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID, ID=case when Project_Name=@S2 then ID else NULL end, Information,Status=case when Project_Name=@S2 then Status else 'zzz' end, Project_Name,Project_UID";
+		sql_0+=" from all_volunteer_and_status where (Project_Name is NULL or Project_Name=@S2) or (Project_Name!=@S2 and Status='Completed')  )";
+		sql_0+=",result_of_one_project_1      as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID, ID,Information,Status, gp=row_number() over (PARTITION BY volunteer_UID order by Status), Project_Name,Project_UID from result_of_one_project_0 )";
+		sql_0+=",result_of_one_project        as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID, ID,Information,Status, gp, Project_Name,Project_UID, RowNum=row_number() over (order by volunteer_ID DESC) from result_of_one_project_1 where gp=1)";
+		//sql_0+=",result_of_one_project_0      as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID,          ID=case when Project_Name=@S2 then ID else NULL end,          Information,Status=case when Project_Name=@S2 then Status else 'busy' end,       Project_Name,Project_UID,RowNum=row_number() over (order by volunteer_ID DESC) from all_volunteer_and_status where (Project_Name is NULL or Project_Name=@S2) or (Project_Name!=@S2 and Status='Completed')  )";
+		//sql_0+=",volunteer_free               as (select volunteer_UID from result_of_one_project_0 where Status='busy' )";
+		//sql_0+=",result_of_one_project        as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,result_of_one_project_0.volunteer_UID, ID, Information,Status, Project_Name,Project_UID,RowNum/*=row_number() over (order by volunteer_ID DESC)*/ from result_of_one_project_0 join volunteer_free on result_of_one_project_0.volunteer_UID<>volunteer_free.volunteer_UID)";
+		/*
+		sql_0+=",volunteer_free               as (select                                     volunteer_UID,ID=NULL from all_volunteer_and_status where Project_Name<>@S2 and Status='Screening' )";
+		sql_0+=",result_of_one_project        as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID,ID,  Information,Status, Project_Name,Project_UID,RowNum=row_number() over (order by volunteer_ID DESC) from all_volunteer_and_status join volunteer_free on (Project_Name is NULL or Project_Name=@S2) or (Project_Name!=@S2 and Status='Screening')  )";
+
+		sql_0+=",volunteer_with_no_status     as (select volunteer_UID,ID from all_volunteer_and_status where Project_Name is NULL )";
+		sql_0+=",volunteer_in_one_project     as (select volunteer_UID,ID from all_volunteer_and_status where Project_Name=@S2 )";
+		sql_0+=",volunteer_free               as (select R_V1,P_V1,RP1,P_V2,RP2,volunteer_ID,volunteer_UID,          ID=NULL,     Information,Status,       Project_Name,Project_UID,RowNum=row_number() over (order by volunteer_ID DESC) from all_volunteer_and_status where Project_Name<>@S2 and Status='Screening' )";
+		sql_0+=",final_volunteer        	  as (select R_V1,P_V1,RP1,P_V2,RP2,all_volunteer_and_status.volunteer_ID,all_volunteer_and_status.volunteer_UID,  all_volunteer_and_status.ID,          Information,Status,       Project_Name,Project_UID,RowNum=row_number() over (order by volunteer_ID DESC) from all_volunteer_and_status";
+		sql_0+=" join volunteer_with_no_status on all_volunteer_and_status.volunteer_UID=volunteer_with_no_status.volunteer_UID  )";
+		*/
 		//-------------------------------------
 		_set_req=function(){
 			var sql  =sql_0+" select * from result_of_one_project where RowNum between @I6 and @I7"
