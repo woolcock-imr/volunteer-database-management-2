@@ -20,7 +20,7 @@
                     if(records[I].UID==null || records[I].UID==undefined) return;
                     td.html("<u style='cursor:pointer;'>Volunteers...</u>");
                     td.find('u').on('click',function(){
-						$vm.nav_load_module(prefix+'volunteer-status','',{record:records[I]});
+						$vm.nav_load_module(prefix+'volunteer-project-tracking','',{record:records[I]});
                     })
                     break;
             }

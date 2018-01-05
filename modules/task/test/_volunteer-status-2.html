@@ -1,0 +1,160 @@
+<section>
+    VmInclude:__COMPONENT__/grid/grid.v3.html
+</section>
+<script>
+    function F__ID(){
+        //-------------------------------------
+        VmInclude:__COMPONENT__/grid/grid.v3.js
+		_json='';
+		//-------------------------------------
+		_fields="_Form,gp,b,R_V1,P_V1,RP1,P_V2,RP2,Project_Name,volunteer_UID,ID";
+		_fields+=",Status,_Call_Log,_Summary,Start_date,End_date";
+		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
+        _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
+		_fields+=",Submit Date|DateTime,_Delete";
+		//-------------------------------------
+		var prefix=$vm.module_list[$vm.vm['__ID'].name].prefix;
+		var project="";
+		//-------------------------------------
+		$('#D__ID').on('load',function(){
+			project=$vm.vm['__ID'].op.input.record;
+			_set_req(); _request_data();
+		})
+		//-------------------------------------
+		_cell_render=function(records,I,field,td,set_value,source){
+            switch(field){
+                case '_Call_Log':
+                    records[I].vm_custom[field]=true;
+                    td.html("<u style='cursor:pointer;'>Call Log...</u>");
+                    td.find('u').on('click',function(){
+						$vm.nav_load_module(prefix+'volunteer-call-log','',{record:records[I],Project_Name:project.Project_Name});
+	                })
+                    break;
+                case '_Summary':
+                        records[I].vm_custom[field]=true;
+                        td.html("<u style='cursor:pointer;'>Summary...</u>");
+						td.find('u').on('click',function(){
+							$vm.nav_load_module(prefix+'volunteer-summary','',{record:records[I]});
+		                })
+                        break;
+                case 'Status':
+                            records[I].vm_custom[field]=true;
+                            var html="<select style='border:0;'>"
+                            if(records[I].Reserved=='Reserved'){
+                                html+="<option>Registration</option>";
+                                html+="<option>Screening Failure</option>";
+                                html+="</select>"
+                            }
+                            else{
+                                html+="<option>Registration</option>";
+                                html+="<option>Screening</option>";
+                                html+="<option>Screening Failure</option>";
+                                html+="<option>Enrolled</option>";
+                                html+="<option>Withdrawn</option>";
+                                html+="<option>Completed</option>";
+                                html+="</select>"
+                            }
+                            td.html(html)
+                            td.find('select').val(records[I][field])
+                            td.find('select').on('change', function(){
+                                set_value($(this).val(),records,I,field);
+                                var today = new Date();
+                                var dd = today.getDate();
+                                var mm = today.getMonth()+1; //January is 0!
+                                var yyyy = today.getFullYear();
+                                if(dd<10){dd='0'+dd;}
+                                if(mm<10){mm='0'+mm;}
+                                var today = dd+'/'+mm+'/'+yyyy;
+                                if($(this).val()==='DO NOT CALL' || $(this).val()==='Screening'){
+                                    set_value(today,records,I,'Start_date');
+                                    _render(I);
+                                }
+                                if($(this).val()==='Completed' || $(this).val()==='Withdrawn'){
+                                    set_value(today,records,I,'End_date');
+                                    _render(I);
+                                }
+                            });
+                            break;
+					case 'Reserved':
+                        if(records[I].Reserved=='Reserved'){
+                            td.css('color','red');
+                        }
+                        td.attr('contenteditable','false')
+                        td.find('div').attr('contenteditable','false')
+                        break;
+                    case 'Start_date':
+                    case 'End_date':
+	                    if(records[I].Reserved=='Reserved'){
+	                        td.css('color','red');
+	                        td.attr('contenteditable','false')
+	                        td.find('div').attr('contenteditable','false')
+	                    }
+	                    else{
+	                        VmInclude:__COMPONENT__/grid/field_date.js
+	                    }
+                        break;
+					case 'First_Name':
+					case 'Last_Name':
+						records[I].vm_readonly[field]=true;
+						break;
+					case 'Medical_Research':
+					case 'Asthma':
+					case 'COPD':
+					case 'Emphysema':
+					case 'Lung_Cancer':
+						td.html('<input type=checkbox />');
+						VmInclude:__COMPONENT__/grid/field_checkbox.js
+						td.find('input').off('click').on('click', function(){return false;})
+						break;
+            }
+        }
+		//-------------------------------------
+		//B1=1 	Medical_Research;
+		//20008533: registration
+		//20009716: project
+		//20011360: volunteer status
+		//@S2: project name
+
+		var sql_0="with current_project as (select P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
+		sql_0+=",registration as (select ID,UID,Information,R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
+
+		//sql_0+=",busy_flag_0 as (select b0=case when S1='Completed' or S1='Registration' then 0 else 1 end, PUID from [TABLE-20011360] where S3!=@S2)";
+		//sql_0+=",busy_flag as (select PUID,b=Sum(b0) from busy_flag_0 group by PUID)";
+
+		sql_0+=",busy_flag_0 as (select b0=case when S1='Completed' or S1='Registration' or S1 is NULL then 0 else 1 end, PUID,Project_Name=case when S3=@S2 then S3 else 'zzz_other_project' end from [TABLE-20011360])";
+		sql_0+=",busy_flag as (select PUID,Project_Name,b=Sum(b0) from busy_flag_0 group by PUID,Project_Name)";
+		sql_0+=",join_flag as (select PUID,c=1,Project_Name=S3 from [TABLE-20011360] where S1='Registration' and S3=@S2 )";
+		sql_0+=",all_status as (select self.PUID,S1,S3,b,c from [TABLE-20011360] as self left join busy_flag on self.PUID=busy_flag.PUID left join join_flag on self.PUID=join_flag.PUID)";
+		sql_0+=",all_registration_with_status as (select ID,volunteer_UID=UID,Information,R_V1,S1,S3,b,c from registration left join all_status on registration.UID=all_status.PUID  )";
+
+		sql_0+=",all_results as (select ID,volunteer_UID,Information,R_V1,Status=S1,Project_Name=S3,b,c, RowNum=row_number() over (order by ID DESC) from all_registration_with_status join current_project on ( S3 is null or S3=@S2) and (b=0 or b is null) and (c=1 or R_V1&P_V1=P_V1))"
+
+		//sql_0+=",all_results as (select ID,Information,R_V1,S1,S3,b,c, RowNum=row_number() over (order by ID DESC) from all_registration_with_status )"
+
+
+		//-------------------------------------
+		_set_req=function(){
+			var sql  =sql_0+" select * from all_results where RowNum between @I6 and @I7"
+			var sql_n=sql_0+" select count(ID) from all_results";
+			_req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:project.Project_Name}
+		}
+		//-------------------------------------
+		_set_req_export=function(i1,i2){
+			var sql  =sql_0+" select * from all_results where RowNum between @I1 and @I2"
+			_req={cmd:'query_records',sql:sql,i1:i1,i2:i2,s2:project.Project_Name};
+		}
+		//-----------------------------------------------
+		_before_submit=function(record,dbv){
+			dbv.S1=record.Status;
+			dbv.S2=record.First_Name+' '+record.Last_Name;
+			dbv.S3=project.Project_Name;
+			dbv.PUID=record.volunteer_UID;
+			dbv.GUID=record.Project_UID;
+            return true;
+        };
+        //-------------------------------------
+    }
+</script>
+<style>
+    VmInclude:__COMPONENT__/grid/grid.v3.css
+</style>

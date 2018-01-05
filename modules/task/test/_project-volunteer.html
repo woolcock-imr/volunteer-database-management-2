@@ -7,7 +7,7 @@
         VmInclude:__COMPONENT__/grid/grid.v3.js
 		_json='';
 		//-------------------------------------
-		_fields="_Form,gp,b,Project_Name,volunteer_UID,ID,R_V1,P_V1,RP1,P_V2,RP2";
+		_fields="_Form,ID,bID,bFlag,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
 		_fields+=",Status,_Call_Log,_Summary,Start_date,End_date";
 		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
@@ -114,24 +114,20 @@
 		//20009716: project
 		//20011360: volunteer status
 		//@S2: project name
-
 		var sql_0="with current_project as (select P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
-		sql_0+=",registration as (select ID,UID,Information,R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
-		sql_0+=",busy_flag_0 as (select b0=case when S1='Completed' or S1='Registration' or S1 is NULL then 0 else 1 end, PUID,Project_Name=case when S3=@S2 then S3 else 'zzz_other_project' end from [TABLE-20011360])";
-		sql_0+=",busy_flag as (select PUID,Project_Name,b=Sum(b0) from busy_flag_0 group by PUID,Project_Name)";
-		sql_0+=",join_flag as (select PUID,c=1,Project_Name=S3 from [TABLE-20011360] where S1='Registration' and S3=@S2 )";
-		sql_0+=",all_status as (select self.PUID,S1,S3,b,c from [TABLE-20011360] as self left join busy_flag on self.PUID=busy_flag.PUID left join join_flag on self.PUID=join_flag.PUID)";
-		sql_0+=",all_registration_with_status as (select ID,volunteer_UID=UID,Information,R_V1,S1,S3,b,c from registration left join all_status on registration.UID=all_status.PUID  )";
-
-		sql_0+=",all_results as (select ID,volunteer_UID,Information,R_V1,Status=S1,Project_Name=S3,b,c, RowNum=row_number() over (order by ID DESC) from all_registration_with_status join current_project on ( S3 is null or S3=@S2) and (b=0 or b is null) and (c=1 or R_V1&P_V1=P_V1))"
-
-		//sql_0+=",all_results as (select ID,Information,R_V1,S1,S3,b,c, RowNum=row_number() over (order by ID DESC) from all_registration_with_status )"
-
-
+		sql_0+=",registration as (select UID,Information,R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
+		sql_0+=",busy_flag as (select bID=ID,bFlag=S1,PUID from [TABLE-20011361])";
+		sql_0+=",status as (select ID,PUID,Status=S1 from [TABLE-20011360] where S3=@S2)";
+		sql_0+=",volunteer as (select ID,bID,bFlag,Status,UID,Information,R_V1,RowNum=row_number() over (order by UID DESC) from registration ";
+		sql_0+="left join busy_flag on UID=busy_flag.PUID ";
+		sql_0+="left join status    on UID=status.PUID ";
+		sql_0+="join current_project on R_V1&P_V1=P_V1 or Status='Registration' ";
+		sql_0+="where bFlag=@S2 or bFlag is NULL )";
+		sql_0+=",all_results as (select * from volunteer)";
 		//-------------------------------------
 		_set_req=function(){
 			var sql  =sql_0+" select * from all_results where RowNum between @I6 and @I7"
-			var sql_n=sql_0+" select count(ID) from all_results";
+			var sql_n=sql_0+" select count(UID) from all_results";
 			_req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:project.Project_Name}
 		}
 		//-------------------------------------
@@ -147,6 +143,38 @@
 			dbv.PUID=record.volunteer_UID;
 			dbv.GUID=record.Project_UID;
             return true;
+        };
+        //-------------------------------------
+		_after_submit=function(I,res,type,dbv){
+			//BI processing. first second caculate busy state, second get busy record's ID,
+			jQuery.ajaxSetup({async:false});
+			var busy="";
+			//get all project status of this voulunteer
+			var sqlA="select S1,S3 from [TABLE-20011360] where PUID=@I1";
+			var reqA={cmd:'query_records',sql:sqlA,i1:_records[I].UID,s2:project.Project_Name};
+			$VmAPI.request({data:reqA,callback:function(res){
+				for(var i=0;i<res.records.length;i++){
+					if(res.records[i].S1!="Completed" && res.records[i].S1!="Registration"){
+						busy=res.records[i].S3;
+						break;
+					}
+				}
+				//get busy record ID of this volunteer
+				var sqlB="select ID from [TABLE-20011361] where PUID=@I1";
+				var reqB={cmd:'query_records',sql:sqlB,i1:_records[I].UID};
+				$VmAPI.request({data:reqB,callback:function(res){
+					var reqC="";
+					if(res.records.length!=0){
+						var rid=res.records[0].ID;
+						reqC={cmd:"add_modify",rid:rid.toString(),data:{},dbv:{S1:busy,PUID:_records[I].UID}};
+					}
+					else{
+						reqC={cmd:"add_record",db_pid:"20011361",data:{},dbv:{S1:busy,PUID:_records[I].UID}};
+					}
+					$VmAPI.request({data:reqC,callback:function(res){}})
+				}})
+			}});
+			jQuery.ajaxSetup({async:true});
         };
         //-------------------------------------
     }

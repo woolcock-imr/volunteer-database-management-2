@@ -23,8 +23,10 @@
 		"project-permission": {"table_id":"20011344","url":"/modules/task/admin/project-permission.html","name_for_search":"Project permission"},
 
 		"projects-2":	  				{"table_id":"20009716","url":"/modules/task/test/project.html","name_for_search":"Projects"},
-		"volunteer-status":	  			{"table_id":"20011360","url":"/modules/task/test/volunteer-status.html","name_for_search":"Volunteer Status"},
+		"volunteer-project-tracking":	{"table_id":"20011360","url":"/modules/task/test/volunteer-project-tracking.html","name_for_search":"Project volunteer"},
 		"volunteer-call-log":			{"table_id":"20009655","url":"/modules/task/test/volunteer-call-log.html","name_for_search":""},
-		"volunteer-summary":			{"table_id":"20009655","url":"/modules/task/test/volunteer-summary.html","name_for_search":""}
+		"volunteer-summary":			{"table_id":"20009655","url":"/modules/task/test/volunteer-summary.html","name_for_search":""},
+		"all-volunteer-project-tracking":{"table_id":"20011360","url":"/modules/task/test/all-volunteer-project-tracking.html","name_for_search":"all-volunteer-project-tracking"},
+		"all-volunteer-current-project":{"table_id":"20011361","url":"/modules/task/test/all-volunteer-current-project.html","name_for_search":"all-volunteer-current-project"}
 	}
 }
