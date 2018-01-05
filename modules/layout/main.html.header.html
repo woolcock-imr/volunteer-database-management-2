@@ -43,15 +43,30 @@
     </nav>
     <script>
         //---------------------------------------------
-        if($vm.user=='guest'){
-            $('a[name=signinout]').html('<i class="fa fa-user"></i> Sign In')
-            $('#username__ID').text('');
-        }
-        else{
-            $('a[name=signinout]').html('<i class="fa fa-user"></i> Sign Out')
-            $('#username__ID').text('Signed in as '+ $vm.user);
-        }
+		var init_loop=setInterval(function (){
+			console.log('init_loop...')
+			if($vm.init_status==1){
+				clearInterval(init_loop);
+				show_user();
+			}
+		},100);
         //---------------------------------------------
+		var show_user=function(){
+			var third=""
+			if($vm.user_puid=="1") third=" (Google)";
+			if($vm.user_puid=="2") third=" (Facebook)";
+			if($vm.user=='guest'){
+				$('#username__ID').text('');
+				$('#signin__ID').show();
+				$('#signout__ID').hide();
+			}
+			else{
+				$('#username__ID').text('Signed in as '+ $vm.user+third);
+				$('#signin__ID').hide();
+				$('#signout__ID').show();
+			}
+		}
+		//---------------------------------------------
 		if(window.innerWidth <= 800 && window.innerHeight <= 600) {
 			$('#form__ID').parent().prepend($('#form__ID'));
 		}
