@@ -6,9 +6,10 @@
         //-------------------------------------
         VmInclude:__COMPONENT__/grid/grid.v3.js
 		_json='';
+		$('#keyword__ID').hide();
 		//-------------------------------------
-		_fields="_Form,ID,bID,bFlag,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
-		_fields+=",Status,_Call_Log,_Summary,Start_date,End_date";
+		_fields="_Form,ID,bID,Age,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
+		_fields+=",Source,Status,_Call_Log,_Summary,Start_date,End_date";
 		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
 		_fields+=",Submit Date|DateTime,_Delete";
@@ -46,7 +47,6 @@
                                 html+="</select>"
                             }
                             else{
-                                html+="<option>Registration</option>";
                                 html+="<option>Screening</option>";
                                 html+="<option>Screening Failure</option>";
                                 html+="<option>Enrolled</option>";
@@ -115,11 +115,19 @@
 		//20011360: volunteer status
 		//@S2: project name
 
+		//var filter=" and Status='Completed'";
+		//var filter=" and jFlag is not NULL ";
+		var filter="";
+
 		//current project, use V1,V2 to filter out registrations
-		var sql_0="with current_project as (select P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
+		var sql_0="with current_project as (select project_UID=UID,Age_Min=case when @('Age_Min')<>'' then convert(int,@('Age_Min')) else -9999 end";
+		sql_0+=",Age_Max=case when @('Age_Max')<>'' then convert(int,@('Age_Max')) else 9999 end ,P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
 
 		//all registration
-		sql_0+=",registration as (select UID,Information,R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
+		sql_0+=",registration as (select volunteer_UID=UID,UID,Information, Age=DATEDIFF(year, DT1,GetDate()),R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
+
+		//A join or not join a project
+		sql_0+=",join_project_flag as (select jflag=ID, PUID from [TABLE-20009681] where S1=@S2)";
 
 		//A registration(with UID=PUID) is free or busy in a project
 		sql_0+=",busy_flag as (select bID=ID,bFlag=S1,PUID from [TABLE-20011361])";
@@ -128,11 +136,12 @@
 		sql_0+=",status as (select ID,PUID,Status=S1 from [TABLE-20011360] where S3=@S2)";
 
 		//volunteers (filter out from all registrations) in a project
-		sql_0+=",volunteer as (select ID,bID,bFlag,Status,UID,Information,R_V1,RowNum=row_number() over (order by UID DESC) from registration ";
+		sql_0+=",volunteer as (select Information,volunteer_UID,project_UID,Age,Age_Max,Age_Min,ID,bID,bFlag,jflag,Status,Source=case when jFlag is not NULL then 'Registration' else 'Search' end,UID,R_V1,P_V1,P_V2,RowNum=row_number() over (order by UID DESC) from registration ";
 		sql_0+="left join busy_flag on UID=busy_flag.PUID "; //get busy flag
-		sql_0+="left join status    on UID=status.PUID ";    //get status
-		sql_0+="join current_project on R_V1&P_V1=P_V1 or Status='Registration' "; //apply current project filter but bypass by 'Registration'
-		sql_0+="where bFlag=@S2 or bFlag='' or bFlag is NULL )"; //busy in current project or is Free
+		sql_0+="left join status    on UID=status.PUID ";    //get project tracking status
+		sql_0+="left join join_project_flag on UID=join_project_flag.PUID ";    //get join or not join flag
+		sql_0+="join current_project on (R_V1&P_V1=P_V1 and R_V1&P_V2=0 and Age>=Age_Min and Age<=Age_Max) or jflag is not NULL or status is not NULL "; //apply "1"-current project filter, "2"-join project flag, "3"-status is not nall in this project'
+		sql_0+="where (bFlag=@S2 or bFlag='' or bFlag is NULL or status is not NULL) "+filter+") "; //busy in current project or is Free or status is not nall in this project
 
 		//-------------------------------------
 		_set_req=function(){
@@ -164,7 +173,7 @@
 			var reqA={cmd:'query_records',sql:sqlA,i1:_records[I].UID,s2:project.Project_Name};
 			$VmAPI.request({data:reqA,callback:function(res){
 				for(var i=0;i<res.records.length;i++){
-					if(res.records[i].S1!="Completed" && res.records[i].S1!="Registration"){
+					if(res.records[i].S1=="Screening" || res.records[i].S1=="Enrolled"){
 						busy=res.records[i].S3;
 						break;
 					}
