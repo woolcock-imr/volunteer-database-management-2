@@ -13,20 +13,14 @@
 		"volunteer-search":	      		{"table_id":"20009716","url":"/modules/task/admin/volunteer-search.html","name_for_search":"Volunteer search"},
 		"project-volunteers-search":	{"table_id":"20008533","url":"/modules/task/admin/project-volunteers-search.html","name_for_search":""},
 
-		"research-projects":	  		{"table_id":"20009716","url":"/modules/task/research-projects/research-projects.html","name_for_search":"Research projects"},
-		"project-volunteers-all": 		{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers-all.html","name_for_search":""},
-		"project-volunteers":	  		{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers.html","name_for_search":""},
-		"project-volunteers-new": 	  	{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers-new.html","name_for_search":""},
-		"project-volunteers-failure": 	{"table_id":"20009681","url":"/modules/task/research-projects/project-volunteers-failure.html","name_for_search":""},
-
 		"research-participation": {"table_id":"20009681","url":"/modules/task/research-participation.html","name_for_search":""},
 		"project-permission": {"table_id":"20011344","url":"/modules/task/admin/project-permission.html","name_for_search":"Project permission"},
 
-		"projects-2":	  				{"table_id":"20009716","url":"/modules/task/test/project.html","name_for_search":"Projects"},
-		"volunteer-project-tracking":	{"table_id":"20011360","url":"/modules/task/test/volunteer-project-tracking.html","name_for_search":"Project volunteer"},
-		"volunteer-call-log":			{"table_id":"20009655","url":"/modules/task/test/volunteer-call-log.html","name_for_search":""},
-		"volunteer-summary":			{"table_id":"20009655","url":"/modules/task/test/volunteer-summary.html","name_for_search":""},
-		"all-volunteer-project-tracking":{"table_id":"20011360","url":"/modules/task/test/all-volunteer-project-tracking.html","name_for_search":"all-volunteer-project-tracking"},
-		"all-volunteer-current-project":{"table_id":"20011361","url":"/modules/task/test/all-volunteer-current-project.html","name_for_search":"all-volunteer-current-project"}
+		"projects-2":	  				{"table_id":"20009716","url":"/modules/task/research-projects/project.html","name_for_search":"Projects"},
+		"volunteer-project-tracking":	{"table_id":"20011360","url":"/modules/task/research-projects/volunteer-project-tracking.html","name_for_search":"Project volunteer"},
+		"volunteer-call-log":			{"table_id":"20009655","url":"/modules/task/research-projects/volunteer-call-log.html","name_for_search":""},
+		"volunteer-summary":			{"table_id":"20009655","url":"/modules/task/research-projects/volunteer-summary.html","name_for_search":""},
+		"volunteer-status":{"table_id":"20011360","url":"/modules/task/research-projects/volunteer-status.html","name_for_search":"Volunteer Status"},
+		"volunteer-active":			{"table_id":"20011361","url":"/modules/task/research-projects/volunteer-active.html","name_for_search":"Active Volunteers"}
 	}
 }

@@ -8,7 +8,8 @@
 		_json='';
 		$('#keyword__ID').hide();
 		//-------------------------------------
-		_fields="_Form,ID,bID,Age,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
+		_fields="_Form";
+        _fields+=",ID,bID,Age,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
 		_fields+=",Source,Status,_Call_Log,_Summary,Start_date,End_date";
 		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
@@ -95,13 +96,23 @@
                         break;
 					case 'First_Name':
 					case 'Last_Name':
+                    case 'Gender':
+                    case 'YOB':
+                    case 'Phone':
 						records[I].vm_readonly[field]=true;
 						break;
 					case 'Medical_Research':
 					case 'Asthma':
-					case 'COPD':
-					case 'Emphysema':
-					case 'Lung_Cancer':
+                    case 'COPD':
+                    case 'Chronic_Bronchitis':
+                    case 'Emphysema':
+                    case 'Rhintis':
+                    case 'Lung_Cancer':
+                    case 'Insomnia':
+                    case 'Narcolepsy':
+                    case 'OSA':
+                    case 'RLS':
+                        records[I].vm_readonly[field]=true;
 						td.html('<input type=checkbox />');
 						VmInclude:__COMPONENT__/grid/field_checkbox.js
 						td.find('input').off('click').on('click', function(){return false;})
