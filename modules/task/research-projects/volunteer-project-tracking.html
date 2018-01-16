@@ -10,7 +10,7 @@
 		//-------------------------------------
 		_fields="_Form";
         _fields+=",ID,bID,Age,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
-		_fields+=",Source,Status,_Call_Log,_Summary,Start_date,End_date";
+		_fields+=",Source,Status,_Call_Log,_Hidden|_Summary,Start_date,End_date";
 		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
 		_fields+=",Submit Date|DateTime,_Delete";
@@ -135,7 +135,7 @@
 		sql_0+=",Age_Max=case when @('Age_Max')<>'' then convert(int,@('Age_Max')) else 9999 end ,P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
 
 		//all registration
-		sql_0+=",registration as (select volunteer_UID=UID,UID,Information, Age=DATEDIFF(year, DT1,GetDate()),R_V1=convert(int,V1),B1 from [TABLE-20008533] /*where B1=1*/ )";
+		sql_0+=",registration as (select volunteer_UID=UID,UID,Information, Age=DATEDIFF(year, DT1,GetDate()),R_V1=convert(int,V1),B1 from [TABLE-20008533] where B1=1 )";
 
 		//A join or not join a project
 		sql_0+=",join_project_flag as (select jflag=ID, PUID from [TABLE-20009681] where S1=@S2)";
@@ -147,7 +147,7 @@
 		sql_0+=",status as (select ID,PUID,Status=S1 from [TABLE-20011360] where S3=@S2)";
 
 		//volunteers (filter out from all registrations) in a project
-		sql_0+=",volunteer as (select Information,volunteer_UID,project_UID,Age,Age_Max,Age_Min,ID,bID,bFlag,jflag,Status,Source=case when jFlag is not NULL then 'Registration' else 'Search' end,UID,R_V1,P_V1,P_V2,RowNum=row_number() over (order by UID DESC) from registration ";
+		sql_0+=",volunteer as (select Information,volunteer_UID,project_UID,Age,Age_Max,Age_Min,ID,bID,bFlag,jflag,Status,Source=case when jflag is not NULL then 'Registration' else 'Search' end,UID,R_V1,P_V1,P_V2,RowNum=row_number() over (order by UID DESC) from registration ";
 		sql_0+="left join busy_flag on UID=busy_flag.PUID "; //get busy flag
 		sql_0+="left join status    on UID=status.PUID ";    //get project tracking status
 		sql_0+="left join join_project_flag on UID=join_project_flag.PUID ";    //get join or not join flag
@@ -168,10 +168,11 @@
 		//-----------------------------------------------
 		_before_submit=function(record,dbv){
 			dbv.S1=record.Status;
-			dbv.S2=record.First_Name+' '+record.Last_Name;
+			//dbv.S2=record.First_Name+' '+record.Last_Name;
+            dbv.S2="system_20008533_"+record.Email;
 			dbv.S3=project.Project_Name;
 			dbv.PUID=record.volunteer_UID;
-			dbv.GUID=record.Project_UID;
+			dbv.GUID=record.project_UID;
             return true;
         };
         //-------------------------------------
