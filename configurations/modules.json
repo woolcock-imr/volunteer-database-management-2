@@ -4,7 +4,8 @@
 		"home":	          {"url":"/modules/home.html","name_for_search":"Home page"},
 
 		"volunteer":					{"table_id":"20008533","url":"/modules/task/admin/volunteer.html","name_for_search":"Volunteer"},
-		"project":						{"table_id":"20009716","url":"/modules/task/admin/project.html","name_for_search":"Projects"},
+		"project":						{"table_id":"20009716","url":"/modules/task/admin/project.html","form_module":"project-form","name_for_search":"Projects"},
+		"project-form":					{"table_id":"20009716","url":"/modules/task/admin/project.form.html","name_for_search":"Project Form"},
 
 
 		"call-log-child":				{"table_id":"20009655","url":"/modules/task/call-log-child.html","name_for_search":""},
