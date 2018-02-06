@@ -203,7 +203,7 @@
 		sql_0+="left join status    on UID=status.PUID ";    //get project tracking status
 		sql_0+="left join join_project_flag on UID=join_project_flag.PUID ";    //get join or not join flag
 		sql_0+="join current_project on (R_V1&P_V1=P_V1 and R_V1&P_V2=0 and Age>=Age_Min and Age<=Age_Max) or jflag is not NULL or status is not NULL "; //apply "1"-current project filter, "2"-join project flag, "3"-status is not nall in this project'
-		sql_0+="where (bFlag=@S2 or bFlag='' or bFlag is NULL or status is not NULL) "+filter+") "; //busy in current project or is Free or status is not nall in this project
+		sql_0+="where (bFlag=@S2 or bFlag='' or bFlag is NULL or status is not NULL ) "+filter+") "; //busy in current project or is Free or status is not null in this project
 
 		//-------------------------------------
 		_set_req=function(){

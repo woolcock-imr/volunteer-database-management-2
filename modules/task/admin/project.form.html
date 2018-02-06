@@ -7,7 +7,7 @@
             <div class="row row__ID">
                 <div class="col-sm-6" >
                     Project Name
-                    <input  class="form-control" type="text" id=Project_Name__ID name="Project_Name" placeholder="" required >
+                    <input  class="form-control" type="text" name="Project_Name" placeholder="" required >
                 </div>
                 <div class="col-sm-6" >
                     Users - Name and RT Username
@@ -292,57 +292,43 @@
 </section>
 <script>
 function F__ID(){
-    _json='';
+	VmInclude:__COMPONENT__/grid/form.v3.js
     $('#D__ID').on('load',function(){
-        $("#F__ID")[0].reset();
-        $('#submit__ID').show();
-        $('#delete__ID').hide();
-//alert(JSON.stringify($vm.vm['__ID'].op))
-        var input=$vm.vm['__ID'].op.input;
-        var rid=input.rid;
-        if(rid!=undefined)	read_record(rid);
+		_init();
+		$('#submit__ID').show();
+		//_field_process();
+		custom_field_process();
     })
     //--------------------------------------------------------
-    var read_record=function(rid){
-        $VmAPI.request({data:{cmd:'read_record',db_pid:demo_db_pid,rid:rid},callback:function(res){
-            $('#delete__ID').show();
-            $.each(res.records[0], function(name, value){
-                var $el = $('#F__ID *[name='+name+']');
-                var type = $el.attr('type');
-                switch(type){
-                    /*
-                    case 'checkbox':
-                        $el.attr('checked', 'checked');
-                        break;
-                    case 'radio':
-                        $el.filter('[value="'+value+'"]').attr('checked', 'checked');
-                        break;
-                    */
-                    default:
-                        $el.val(value);
-                }
-            });
-        }})
-    }
-    //--------------------------------------------------------
+	var custom_field_process=function(){
+		//$('#F__ID input[name=Project_Name]').val(_records[I].Project_Name);
+		deserialize(_records[I]);
+	}
+	//--------------------------------------------------------
     $('#F__ID').submit(function(event){
         //--------------------------------------------------------
         event.preventDefault();
         $('#submit__ID').hide();
-        $('#delete__ID').hide();
         //--------------------------------------------------------
-        var data={}; var a=$("#F__ID").serializeArray(); $.each(a, function () {	data[this.name]=this.value || '';});
-        var dt1=$('#Date__ID').val()+" "+$('#Time__ID').val();
-        var dbv={DT1:dt1,V3:demo_data_id}
+        var data={}, dbv={};
+		var a=$("#F__ID").serializeArray(); $.each(a, function () {	data[this.name]=this.value || '';});
+		$("#F__ID input[type=checkbox]").each(function(){
+			data[this.name]=this.checked ? "1" : "0";
+		})
         //--------------------------------------------------------
+		if(_before_submit!=''){
+			_before_submit(data,dbv)
+		}
+		//--------------------------------------------------------
+		var rid=_records[I].ID;
         if(rid==undefined){
-            var req={cmd:"add_record",db_pid:demo_db_pid,data:data,dbv:dbv};
+            var req={cmd:"add_record",db_pid:_db_pid,data:data,dbv:dbv};
             $VmAPI.request({data:req,callback:function(res){
                 $vm.alert('Your request has been successfully submitted');
             }});
         }
         else{
-            var req={cmd:"modify_record",db_pid:demo_db_pid,rid:rid,data:data,dbv:dbv};
+            var req={cmd:"modify_record",db_pid:_db_pid,rid:rid,data:data,dbv:dbv};
             $VmAPI.request({data:req,callback:function(res){
                 $vm.alert('Your request has been successfully submitted');
             }});
@@ -350,15 +336,25 @@ function F__ID(){
         //--------------------------------------------------------
     })
     //--------------------------------------------------------
-    $('#delete__ID').on('click',function(){
-        $('#submit__ID').hide();
-        $('#delete__ID').hide();
-        var req={cmd:"delete_record",rid:rid};
-        $VmAPI.request({data:req,callback:function(res){
-            rid=undefined;
-            $vm.alert('Your request has been successfully submitted');
-        }});
-    });
+	var deserialize=function(record){
+		$.each(record, function(name, value){
+			var $el = $('#F__ID *[name='+name+']');
+			var type = $el.attr('type');
+			switch(type){
+				case 'checkbox':
+					if(value=='off' || value=='0' || value=='') $el.attr('checked', false);
+					else $el.attr('checked', true);
+					break;
+				case 'radio':
+					//$('#F__ID input[name="' + name+ '"][value="' + value + '"]').prop('checked', true);
+					if($el.attr('value')==value) $el.prop('checked', true);
+					break;
+				default:
+					$el.val(value);
+			}
+		});
+	}
+	//--------------------------------------------------------
 }
 </script>
 
