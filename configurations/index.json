@@ -3,6 +3,12 @@
 	"api_path_production":"https://rt.woolcock.org.au/",
 	"default_production":"Yes",
     "panels":{
-		"panel_main":{"url":"","modules":["modules.json"]}
+		"website":{"url":"","modules":[
+			"modules/website/module.json",
+			"modules/admin/module.json",
+			"modules/project-approval/module.json",
+			"modules/research-projects/module.json",
+			"modules/others/module.json"
+		]}
 	}
 }

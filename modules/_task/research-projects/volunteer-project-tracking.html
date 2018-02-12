@@ -1,5 +1,56 @@
 <section>
-    VmInclude:__COMPONENT__/grid/grid.v3.html
+    <section>
+    	<div id=toolbar__ID class="navbar navbar-default">
+    	    	<div id=row_1__ID class="col-sm _col-lg-3 form-inline">
+    		        	<button id=new__ID  type=button class='btn btn-secondary' title='New'><i class="fa fa-plus"></i></button>
+    		        	<button id=save__ID type=button class='btn btn-secondary' title='Save'><i class="fa fa-upload" ></i></button>
+    					<input id=keyword__ID type="text" placeholder="keyword" class="form-control" style="width: 150px; display:inline-block;">
+    					<button id=query__ID type=button class="btn btn-secondary" title='Search'><i class="fa fa-search" ></i></button>
+    	    	</div>
+                <div class="col-sm _col-lg-3 form-inline">
+                    Status Filter:&nbsp;
+                        <select id=filter__ID class="form-control" style='margin-right:20px;display:inline-block;width:auto;'><option>All</option value='NULL' >Empty<option></option><option>Screening</option><option>Screening Failure</option><option>Enrolled</option><option>Withdrawn</option><option>Completed</option></select>
+                </div>
+    	    	<div class="col-sm _col-lg-3 form-inline">
+    		            Page Size:
+    		            <select id=page_size__ID class="form-control" style='margin-right:20px;display:inline-block;width:auto;'><option>30</option><option>50</option><option>100</option><option>200</option></select>
+    		            <span id=I__ID style="display:none">0</span><span id=A__ID></span>
+    		            <button id=p__ID type=button class="btn btn-secondary"><i class="fa fa-arrow-left"></i></button>
+    		            <button id=n__ID type=button class="btn btn-secondary"><i class="fa fa-arrow-right"></i></button>
+    	    	</div>
+    			<div class="d-none d-lg-inline-block col-lg-4 form-inline">
+    					Start page:	<input id=start__ID type=text class="form-control" style="width:45px; display:inline-block;" />
+    		            Num of page: <input id=num__ID type=text class="form-control" style="width:45px; display:inline-block;" />
+    					<button id=export__ID type=button class="btn btn-secondary">Export</button>
+    	    	</div>
+    	       	<span id=elapsed__ID style='float:right'></span>
+        </div>
+        <div id=table__ID>
+            <table id=grid__ID></table>
+        </div>
+    </section>
+    <style>
+    	#toolbar__ID{
+    		background-color:#ccc;
+    		padding:5px 0px;
+    		margin-bottom:0px;
+    		overflow:hidden
+    	}
+    	#toolbar__ID *{
+    		margin-right:3px;
+    	}
+    	@media screen and (max-width:768px){
+    		#toolbar__ID{
+    			padding: 3px 0;
+    		}
+    		#toolbar__ID div{
+    			padding-left:3px;
+    		}
+    		#row_1__ID{
+    			padding-bottom: 3px;
+    		}
+    	}
+    </style>
 </section>
 <script>
     function F__ID(){
@@ -119,6 +170,11 @@
 						break;
             }
         }
+        $('#filter__ID').on('change',function(){
+            if($('#filter__ID').val()!='All' && $('#filter__ID').val()!='') filter="and Status='"+$('#filter__ID').val()+"'";
+            else if($('#filter__ID').val()=='') filter="and Status is NULL";
+            else filter='';
+        });
 		//-------------------------------------
 		//B1=1 	Medical_Research;
 		//20008533: registration
@@ -128,41 +184,46 @@
 
 		//var filter=" and Status='Completed'";
 		//var filter=" and jFlag is not NULL ";
-		var filter="";
+		var filter='';
 
 		//current project, use V1,V2 to filter out registrations
-		var sql_0="with current_project as (select project_UID=UID,Age_Min=case when @('Age_Min')<>'' then convert(int,@('Age_Min')) else -9999 end";
-		sql_0+=",Age_Max=case when @('Age_Max')<>'' then convert(int,@('Age_Max')) else 9999 end ,P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
+        var sql_0="";
+        var set_sql_0=function(){
+            sql_0="with current_project as (select project_UID=UID,Age_Min=case when @('Age_Min')<>'' then convert(int,@('Age_Min')) else -9999 end";
+    		sql_0+=",Age_Max=case when @('Age_Max')<>'' then convert(int,@('Age_Max')) else 9999 end ,P_V1=convert(int,V1),P_V2=convert(int,V2) from [TABLE-20009716] where S3=@S2 )";
 
-		//all registration
-		sql_0+=",registration as (select volunteer_UID=UID,UID,Information, Age=DATEDIFF(year, DT1,GetDate()),R_V1=convert(int,V1),B1 from [TABLE-20008533] where B1=1 )";
+    		//all registration
+    		sql_0+=",registration as (select volunteer_UID=UID,UID,Information, Age=DATEDIFF(year, DT1,GetDate()),R_V1=convert(int,V1),B1 from [TABLE-20008533] where B1=1 )";
 
-		//A join or not join a project
-		sql_0+=",join_project_flag as (select jflag=ID, PUID from [TABLE-20009681] where S1=@S2)";
+    		//A join or not join a project
+    		sql_0+=",join_project_flag as (select jflag=ID, PUID from [TABLE-20009681] where S1=@S2)";
 
-		//A registration(with UID=PUID) is free or busy in a project
-		sql_0+=",busy_flag as (select bID=ID,bFlag=S1,PUID from [TABLE-20011361])";
+    		//A registration(with UID=PUID) is free or busy in a project
+    		sql_0+=",busy_flag as (select bID=ID,bFlag=S1,PUID from [TABLE-20011361])";
 
-		//A registration(with UID=PUID)'s status in current project (Registration, Screening, Completed,...)
-		sql_0+=",status as (select ID,PUID,Status=S1 from [TABLE-20011360] where S3=@S2)";
+    		//A registration(with UID=PUID)'s status in current project (Registration, Screening, Completed,...)
+    		sql_0+=",status as (select ID,PUID,Status=S1 from [TABLE-20011360] where S3=@S2)";
 
-		//volunteers (filter out from all registrations) in a project
-		sql_0+=",volunteer as (select Information,volunteer_UID,project_UID,Age,Age_Max,Age_Min,ID,bID,bFlag,jflag,Status,Source=case when jflag is not NULL then 'Registration' else 'Search' end,UID,R_V1,P_V1,P_V2,RowNum=row_number() over (order by UID DESC) from registration ";
-		sql_0+="left join busy_flag on UID=busy_flag.PUID "; //get busy flag
-		sql_0+="left join status    on UID=status.PUID ";    //get project tracking status
-		sql_0+="left join join_project_flag on UID=join_project_flag.PUID ";    //get join or not join flag
-		sql_0+="join current_project on (R_V1&P_V1=P_V1 and R_V1&P_V2=0 and Age>=Age_Min and Age<=Age_Max) or jflag is not NULL or status is not NULL "; //apply "1"-current project filter, "2"-join project flag, "3"-status is not nall in this project'
-		sql_0+="where (bFlag=@S2 or bFlag='' or bFlag is NULL or status is not NULL) "+filter+") "; //busy in current project or is Free or status is not nall in this project
+    		//volunteers (filter out from all registrations) in a project
+    		sql_0+=",volunteer as (select Information,volunteer_UID,project_UID,Age,Age_Max,Age_Min,ID,bID,bFlag,jflag,Status,Source=case when jflag is not NULL then 'Registration' else 'Search' end,UID,R_V1,P_V1,P_V2,RowNum=row_number() over (order by UID DESC) from registration ";
+    		sql_0+="left join busy_flag on UID=busy_flag.PUID "; //get busy flag
+    		sql_0+="left join status    on UID=status.PUID ";    //get project tracking status
+    		sql_0+="left join join_project_flag on UID=join_project_flag.PUID ";    //get join or not join flag
+    		sql_0+="join current_project on (R_V1&P_V1=P_V1 and R_V1&P_V2=0 and Age>=Age_Min and Age<=Age_Max) or jflag is not NULL or status is not NULL "; //apply "1"-current project filter, "2"-join project flag, "3"-status is not nall in this project'
+    		sql_0+="where (bFlag=@S2 or bFlag='' or bFlag is NULL or status is not NULL ) "+filter+") "; //busy in current project or is Free or status is not null in this project
 
+        }
 		//-------------------------------------
 		_set_req=function(){
+            set_sql_0();
 			var sql  =sql_0+" select * from volunteer where RowNum between @I6 and @I7"
 			var sql_n=sql_0+" select count(UID) from volunteer";
 			_req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val(),s2:project.Project_Name}
 		}
 		//-------------------------------------
 		_set_req_export=function(i1,i2){
-			var sql  =sql_0+" select * from all_results where RowNum between @I1 and @I2"
+            set_sql_0();
+			var sql  =sql_0+" select * from volunteer where RowNum between @I1 and @I2"
 			_req={cmd:'query_records',sql:sql,i1:i1,i2:i2,s2:project.Project_Name};
 		}
 		//-----------------------------------------------
