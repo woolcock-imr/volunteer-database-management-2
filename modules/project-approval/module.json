@@ -2,6 +2,7 @@
 	"modules":
 	{
 		"project-approval":			{"table_id":"20009716","url":"modules/project-approval/task/project.html","form_module":"project-approval-form","name_for_search":"Project approving"},
-		"project-approval-form":	{"table_id":"20009716","url":"modules/project-approval/task/project.form.html","name_for_search":""}
+		"project-approval-form":	{"table_id":"20009716","url":"modules/project-approval/task/project.form.html","name_for_search":""},
+		"project-approval-record":	{"table_id":"91000065"}
 	}
 }

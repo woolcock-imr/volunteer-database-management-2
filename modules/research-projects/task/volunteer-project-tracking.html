@@ -234,6 +234,7 @@
 			dbv.S3=project.Project_Name;
 			dbv.PUID=record.volunteer_UID;
 			dbv.GUID=record.project_UID;
+			//record={}
             return true;
         };
         //-------------------------------------
@@ -243,7 +244,7 @@
 			var busy="";
 			//get all project status of this voulunteer
 			var sqlA="select S1,S3 from [TABLE-20011360] where PUID=@I1";
-			var reqA={cmd:'query_records',sql:sqlA,i1:_records[I].UID,s2:project.Project_Name};
+			var reqA={cmd:'query_records',sql:sqlA,i1:_records[I].UID/*,s2:project.Project_Name*/};
 			$VmAPI.request({data:reqA,callback:function(res){
 				for(var i=0;i<res.records.length;i++){
 					if(res.records[i].S1=="Screening" || res.records[i].S1=="Enrolled"){
