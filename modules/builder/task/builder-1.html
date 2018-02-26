@@ -24,7 +24,7 @@
         $('#D__ID').on('load',function(){  _set_req(); _request_data(); })
         //-------------------------------------
 		_set_req=function(){
-		    var sql="with tb as (select Information,ID,UID,PUID,DateTime,Author,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] where uid=94)";
+		    var sql="with tb as (select Information,ID,UID,PUID,DateTime,Author,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] where uid=881)";
 		    sql+="select Information,ID,UID,PUID,DateTime,Author,RowNum from tb ";
 		    var sql_n="select count(ID) from [TABLE-"+_db_pid+"-@S1]";
 			_req={cmd:'query_records',db_pid:_db_pid,sql:sql,sql_n:sql_n,s1:'"'+$('#keyword__ID').val()+'"',I:$('#I__ID').text(),page_size:$('#page_size__ID').val()}
@@ -38,7 +38,7 @@
 		})
 		//-------------------------------------
 		var process_i=function(i,record){
-    		setTimeout(function(){process(record)}, i*1000);
+    		setTimeout(function(){process(record)}, i*100);
     	}
     	//--------------------------------------------------------
 		var process=function(record){

@@ -24,7 +24,7 @@
         $('#D__ID').on('load',function(){  _set_req(); _request_data(); })
         //-------------------------------------
 		_set_req=function(){
-		    var sql="with tb as (select Information,S1,S2,S3,ID,UID,PUID,DateTime,Author,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] where uid=79)";
+		    var sql="with tb as (select Information,S1,S2,S3,ID,UID,PUID,DateTime,Author,RowNum=row_number() over (order by ID DESC) from [TABLE-"+_db_pid+"-@S1] where uid=383)";
 			sql+=",vol as (select VS2='system_20008533_'+S2,VUID=UID from [TABLE-20008533])";
 			sql+=",prj as (select Project_Name=@('Project_Name'),prjUID=UID from [TABLE-20009716])";
 		    sql+="select Information,VUID,prjUID,S1,S2,S3,ID,UID,PUID,DateTime,Author,RowNum from tb join vol on S2=VS2 join prj on Project_Name=S1";
@@ -39,7 +39,7 @@
 		})
 		//-------------------------------------
 		var process_i=function(i,record){
-    		setTimeout(function(){process(record)}, i*1000);
+    		setTimeout(function(){process(record)}, i*200);
     	}
     	//--------------------------------------------------------
 		var process=function(record){
