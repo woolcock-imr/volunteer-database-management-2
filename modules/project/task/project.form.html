@@ -82,12 +82,14 @@
                     <textarea class="form-control" name="Others" id=Others__ID placeholder="" ></textarea>
                 </div>
             </div>
+			<!--
 			<div class="row row__ID">
                 <div class="col-sm-6" >
                     Select a manager for approving this project
                     <select  class="form-control"  id=Manager_for_Approval__ID  name="Manager_for_Approval" required></select>
                 </div>
             </div>
+			-->
             <div id=header__ID>
         		Search criteria for volunteers
             </div>
@@ -292,8 +294,8 @@
             </div>
             <br>
 			<button id=submit__ID type="submit" style='display:none'></button>
-			<button id=submit1__ID type="button" class="btn btn-secondary">Submit (draft)</button>
-            <button id=submit2__ID type="button" class="btn btn-secondary">Submit (complete, send alert email for approval of project</button>
+			<button id=submit1__ID type="button" class="btn btn-secondary">Save</button>
+            <button id=submit2__ID type="button" class="btn btn-secondary">Submit (Send alert email for approval of project</button>
     	</div>
     </form>
 </section>
@@ -304,6 +306,7 @@ function F__ID(){
 	//--------------------------------------------------------
 	var prefix=$vm.module_list[$vm.vm['__ID'].name].prefix; if(prefix==undefined) prefix="";
 	//--------------------------------------------------------
+	/*
 	var list_managers='';
 	var list_m_sql="select Name=S1,Email=S2,Login_Name=S3 from [TABLE-"+$vm.module_list[prefix+"manager-list"].table_id+"]";
 	var req_m={cmd:'query_records',sql:list_m_sql};
@@ -318,7 +321,7 @@ function F__ID(){
 		}
 	}});
 	jQuery.ajaxSetup({async:true});
-
+	*/
     $('#D__ID').on('load',function(){
 		_init();
 		//--------------------------------------
@@ -327,7 +330,7 @@ function F__ID(){
 		$('#submit2__ID').show();
 		//--------------------------------------
 		//set manager list
-		$vm.set_dropdown_list_from_text($('#Manager_for_Approval__ID'),list_managers);
+		//$vm.set_dropdown_list_from_text($('#Manager_for_Approval__ID'),list_managers);
 		//--------------------------------------
 		//_field_process();
 		custom_field_process();

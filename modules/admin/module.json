@@ -3,10 +3,7 @@
 	{
 		"project-permission": 			{"table_id":"20011344","url":"/modules/admin/task/project-permission.html","name_for_search":"Project permission"},
 		"project-volunteers-search":	{"table_id":"20008533","url":"/modules/admin/task/project-volunteers-search.html","name_for_search":""},
-		"project":						{"table_id":"20009716","url":"/modules/admin/task/project.html","form_module":"project-form","name_for_search":"Projects"},
-		"project-form":					{"table_id":"20009716","url":"/modules/admin/task/project.form.html","name_for_search":"Project Form"},
 		"volunteer":					{"table_id":"20008533","url":"/modules/admin/task/volunteer.html","name_for_search":"Volunteer"},
-		"email-to-manager":				{"url":"/modules/admin/task/email-to-manager.html","name_for_search":"Email to a manager"},
-		"manager-list":					{"table_id":"91000066","url":"/modules/admin/task/manager-list.html","name_for_search":"Manager list"}
+		"alert-email-list":				{"table_id":"91000066","url":"/modules/admin/task/alert-email-list.html","name_for_search":"Alert email list"}
 	}
 }
