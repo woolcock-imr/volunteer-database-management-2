@@ -34,7 +34,13 @@
                     break;
             }
         }
-        $('#D__ID').on('load',function(){  _set_req(); _request_data();  })
+        $('#D__ID').on('load',function(){
+            var sql="select Information from [TABLE-91000071]";
+            var req_m={cmd:'query_records',sql:sql};
+            $VmAPI.request({data:req_m,callback:function(res){
+                _set_req(); _request_data();
+            }});
+        })
         //-------------------------------------
         //-------------------------------------
         _before_submit=function(record,dbv){
