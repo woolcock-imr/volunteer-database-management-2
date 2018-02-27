@@ -5,12 +5,9 @@
     		        	<button id=new__ID  type=button class='btn btn-secondary' title='New'><i class="fa fa-plus"></i></button>
     		        	<button id=save__ID type=button class='btn btn-secondary' title='Save'><i class="fa fa-upload" ></i></button>
     					<input id=keyword__ID type="text" placeholder="keyword" class="form-control" style="width: 150px; display:inline-block;">
-    					<button id=query__ID type=button class="btn btn-secondary" title='Search'><i class="fa fa-search" ></i></button>
+    					Filter:&nbsp;<select id=filter__ID class="form-control" style='margin-right:20px;display:inline-block;width:auto;'><option>All</option value='NULL' >Empty<option></option><option>Screening</option><option>Screening Failure</option><option>Enrolled</option><option>Withdrawn</option><option>Completed</option></select>
+                        <button id=query__ID type=button class="btn btn-secondary" title='Search'><i class="fa fa-search" ></i></button>
     	    	</div>
-                <div class="col-sm _col-lg-3 form-inline">
-                    Status Filter:&nbsp;
-                        <select id=filter__ID class="form-control" style='margin-right:20px;display:inline-block;width:auto;'><option>All</option value='NULL' >Empty<option></option><option>Screening</option><option>Screening Failure</option><option>Enrolled</option><option>Withdrawn</option><option>Completed</option></select>
-                </div>
     	    	<div class="col-sm _col-lg-3 form-inline">
     		            Page Size:
     		            <select id=page_size__ID class="form-control" style='margin-right:20px;display:inline-block;width:auto;'><option>30</option><option>50</option><option>100</option><option>200</option></select>
@@ -60,9 +57,9 @@
 		$('#keyword__ID').hide();
 		//-------------------------------------
 		_fields="_Form";
-        _fields+=",ID,bID,Age,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
-		_fields+=",Source,Status,_Call_Log,_Hidden|_Summary,Start_date,End_date";
-		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,YOB,Asthma,COPD,Emphysema,Lung_Cancer";
+        //_fields+=",ID,bID,Age_Min,Age_Max,bFlag,jflag,R_V1,P_V1,P_V2,volunteer_UID|UID"; //gp,b,R_V1,P_V1,RP1,P_V2,RP2
+		_fields+=",Volunteer ID|UID,Source,Status,_Call_Log,_Hidden|_Summary,Start_date,End_date";
+		_fields+=",First_Name,Last_Name,Volunteering|Medical_Research,Gender,Age,Year_of_Birth,Asthma,COPD,Emphysema,Lung_Cancer";
         _fields+=",Rhintis,Insomnia,Narcolepsy,OSA,RLS,Phone";
 		_fields+=",Submit Date|DateTime,_Delete";
 		//-------------------------------------
