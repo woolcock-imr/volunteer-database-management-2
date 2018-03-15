@@ -17,6 +17,15 @@
         _fields+=",Submit Date|DateTime,Submitted by|Author,_Delete";
 		//,_gridHidden|Postcode_Min,_gridHidden|Postcode_Max
         //-------------------------------------
+		_data_process=function(){
+			var flds='Inc_Asthma,Inc_COPD,Inc_Emphysema,Inc_Lung_Cancer,Inc_Chronic_Bronchitis,Inc_Rhintis,Inc_Insomnia,Inc_Narcolepsy,Inc_OSA,Inc_RLS,Exc_Asthma';
+			flds+='Exc_COPD,Exc_Emphysema,Exc_Lung_Cancer,Exc_Chronic_Bronchitis,Exc_Rhintis,Exc_Insomnia,Exc_Narcolepsy,Exc_OSA,Exc_RLS,Approved,approval_alert';
+			var ids=flds.split(',');
+			for(var i=0;i<ids.length;i++){
+				if(_records[ids[i]]==undefined) _records[ids[i]]='0';
+			}
+		}
+		//-------------------------------------
         _cell_render=function(records,I,field,td,set_value,source){
             switch(field){
 				case '_Approved_by':
